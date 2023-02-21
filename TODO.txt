@@ -1,0 +1,18 @@
+
+
+TODO : 
+- Generate the dataset :
+    it form would be a csv with two columns <movie name> & <synopsis>
+    How to generate the data ? 
+        1. Find it online on kaggle or hugginface
+        2. Webscrapping a website (allocine or wikipedia)
+
+    Using this format the dataset will already be on the good format for GPT finetuning which is <prompt> <completion>
+
+- Train the model,
+    See : 
+        - Wandb example :https://colab.research.google.com/github/wandb/examples/blob/master/colabs/openai/Generate_Doctor_Who_Synopses_with_GPT_3_and_Weights_%26_Biases(video).ipynb
+        - Or try to do my own train() function
+
+
+DONE :

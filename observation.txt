@@ -1,0 +1,10 @@
+Observation for myself as the projet goes on
+
+
+- Language choice : As GPT was trained on engligh dataset, the finetuning would be better on english Language
+    -> Language = engligh
+
+- Wikipedia : 
+    Format : Section title are <Title name> | 
+
+- To use the Wikipedia dataset we need a list of movie 
