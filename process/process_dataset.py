@@ -13,25 +13,20 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 class PlotGeneratorDataset(Dataset):
     def __init__(
         self,
-        tokenizer=AutoTokenizer.from_pretrained(
-            "gpt2-medium",
-            bos_token="<|startoftext|>",
-            eos_token="<|endoftext|>",
-            pad_token="<|pad|>",
-        ),
+        tokenizer=AutoTokenizer.from_pretrained("gpt2-medium"),
         df=pd.read_csv("./data/processed.csv", sep=","),
     ):
         self.tokenizer = tokenizer
-        self.max_length = max([len(tokenizer.encode(txt)) for txt in df["text"]])
+        # self.max_length = max([len(tokenizer.encode(txt)) for txt in df["text"]])
         self.df = df
         self.input_ids = []
         self.attention_mask = []
         self.labels = []
         for txt in df["text"]:
             encodings_dict = tokenizer(
-                "<|startoftext|>" + txt + "<|endoftext|>",
+                txt,
                 truncation=True,
-                max_length=self.max_length,
+                max_length=1024,
                 padding="max_length",
             )
             self.input_ids.append(torch.tensor(encodings_dict["input_ids"]))
@@ -44,9 +39,7 @@ class PlotGeneratorDataset(Dataset):
         return self.input_ids[index], self.attention_mask[index]
 
 
-def split_dataset():
-    dataset = PlotGeneratorDataset()
-    train_size = int(0.8 * len(dataset))
+def split_dataset(dataset):
     train_size = int(0.9 * len(dataset))
     train_dataset, val_dataset = random_split(
         dataset, [train_size, len(dataset) - train_size]

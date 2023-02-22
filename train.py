@@ -1,11 +1,11 @@
 from transformers import (
     TrainingArguments,
-    IntervalStrategy,
     AutoModelForCausalLM,
+    IntervalStrategy,
     Trainer,
     AutoTokenizer,
 )
-from process.process_dataset import split_dataset
+from process.process_dataset import split_dataset, PlotGeneratorDataset
 import torch
 
 
@@ -38,18 +38,11 @@ if __name__ == "__main__":
         logging_dir="./logs",
         report_to="none",
     )
-
+    tokenizer = AutoTokenizer.from_pretrained("gpt2-medium", pad_token="[PAD]")
     model = AutoModelForCausalLM.from_pretrained("gpt2-medium")
-    tokenizer = AutoTokenizer.from_pretrained(
-        "gpt2-medium",
-        bos_token="<|startoftext|>",
-        eos_token="<|endoftext|>",
-        pad_token="<|pad|>",
-    )
-    print("Model generated")
-    print(len(tokenizer))
-    model.resize_token_embeddings(len(tokenizer))
-    train_ds, val_ds = split_dataset()
+    dataset = PlotGeneratorDataset(tokenizer=tokenizer)
+    model.resize_token_embeddings(len(dataset.tokenizer)) # resize the model embeddings to the new vocabulary size 
+    train_ds, val_ds = split_dataset(dataset)
     trainer = Trainer(
         model=model,
         args=training_args,
