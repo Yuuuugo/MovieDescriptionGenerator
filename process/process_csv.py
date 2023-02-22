@@ -2,6 +2,11 @@ import pandas as pd
 import wikipediaapi
 
 
+"""
+From the movies.csv create a processed.csv file with the following columns: year, title, plot
+"""
+
+
 def get_plot(movie, year="1995"):
     wiki_wiki = wikipediaapi.Wikipedia("en")
     page_py = wiki_wiki.page(movie)

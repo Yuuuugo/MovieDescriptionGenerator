@@ -1,0 +1,5 @@
+WANDB_PROJECT = "plotgenerator"
+WANDB_PROJECT = "plotgenerator"
+WANDB_ENTITY = "yuuuugo"
+WANDB_JOB_TYPE = "train"
+WANDB_NOTES = ""

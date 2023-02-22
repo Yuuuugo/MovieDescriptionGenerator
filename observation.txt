@@ -10,3 +10,9 @@ Observation for myself as the projet goes on
 - To use the Wikipedia dataset we need a list of movie 
 
 - How to train the model, can we use the Trainer ? or should we do our won trainer class
+
+
+
+
+- data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False) cannot be used the data is not in the right format for it find why
+Find the good way to use this data_collator without issue

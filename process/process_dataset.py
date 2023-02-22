@@ -7,14 +7,18 @@ import torch
 import multiprocessing
 import os
 
+
+"""
+Create a dataset class for the plot generator
+"""
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
 class PlotGeneratorDataset(Dataset):
     def __init__(
         self,
-        tokenizer=AutoTokenizer.from_pretrained("gpt2-medium"),
         df=pd.read_csv("./data/processed.csv", sep=","),
+        tokenizer=AutoTokenizer.from_pretrained("gpt2-medium"),
     ):
         self.tokenizer = tokenizer
         # self.max_length = max([len(tokenizer.encode(txt)) for txt in df["text"]])
@@ -40,17 +44,14 @@ class PlotGeneratorDataset(Dataset):
 
 
 def split_dataset(dataset):
-    train_size = int(0.9 * len(dataset))
-    train_dataset, val_dataset = random_split(
-        dataset, [train_size, len(dataset) - train_size]
-    )
-    return train_dataset, val_dataset
+    train_size = int(0.8 * len(dataset))
+    val_size = len(dataset) - train_size
+    train_ds, val_ds = random_split(dataset, [train_size, val_size])
+    return train_ds, val_ds
 
 
 if __name__ == "__main__":
-    dataset = PlotGeneratorDataset(
-        df=pd.read_csv("../data/processed.csv", sep=","),
-    )
-    index = 6
-    input_ids, attention_mask = dataset[index]
-    print(dataset.tokenizer.decode(input_ids))
+    dataset = PlotGeneratorDataset()
+    train_ds, val_ds = train_test_split(dataset, test_size=0.2)
+    print(len(train_ds))
+    print(len(val_ds))
