@@ -8,3 +8,5 @@ Observation for myself as the projet goes on
     Format : Section title are <Title name> | 
 
 - To use the Wikipedia dataset we need a list of movie 
+
+- How to train the model, can we use the Trainer ? or should we do our won trainer class
