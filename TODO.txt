@@ -17,3 +17,8 @@ DONE :
 
     Using this format the dataset will already be on the good format for GPT finetuning which is <prompt> <completion>
 
+
+
+
+ERROR TO FIX :
+    - Token indices sequence length is longer than the specified maximum sequence length for this model (1045 > 1024). Running this sequence through the model will result in indexing errors

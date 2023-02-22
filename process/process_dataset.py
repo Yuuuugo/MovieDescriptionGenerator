@@ -19,13 +19,14 @@ class PlotGeneratorDataset(Dataset):
             eos_token="<|endoftext|>",
             pad_token="<|pad|>",
         ),
-        df=pd.read_csv("../data/processed.csv", sep=","),
+        df=pd.read_csv("./data/processed.csv", sep=","),
     ):
         self.tokenizer = tokenizer
         self.max_length = max([len(tokenizer.encode(txt)) for txt in df["text"]])
         self.df = df
         self.input_ids = []
         self.attention_mask = []
+        self.labels = []
         for txt in df["text"]:
             encodings_dict = tokenizer(
                 "<|startoftext|>" + txt + "<|endoftext|>",
@@ -54,7 +55,9 @@ def split_dataset():
 
 
 if __name__ == "__main__":
-    dataset = PlotGeneratorDataset()
+    dataset = PlotGeneratorDataset(
+        df=pd.read_csv("../data/processed.csv", sep=","),
+    )
     index = 6
     input_ids, attention_mask = dataset[index]
     print(dataset.tokenizer.decode(input_ids))
