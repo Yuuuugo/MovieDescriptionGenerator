@@ -40,7 +40,7 @@ def process_data(file):
         "(\d{4})", expand=True
     )  # extract the year
     data["title"] = data["prompt"].map(
-        lambda x: x.split("(")[0] + " :"
+        lambda x: x.split("(")[0]
     )  # delete the name
     data["description"] = data["title"].map(lambda x: get_plot(x))  # get the plot
     data.drop("prompt", axis=1, inplace=True)
