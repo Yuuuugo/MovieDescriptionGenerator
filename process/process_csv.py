@@ -39,10 +39,11 @@ def process_data(file):
     data["year"] = data["prompt"].str.extract(
         "(\d{4})", expand=True
     )  # extract the year
-    data["title"] = data["prompt"].map(lambda x: x.split("(")[0])  # delete the name
+    data["title"] = data["prompt"].map(
+        lambda x: x.split("(")[0] + " :"
+    )  # delete the name
     data["description"] = data["title"].map(lambda x: get_plot(x))  # get the plot
     data.drop("prompt", axis=1, inplace=True)
-    data["text"] = data["title"] + ":" + data["description"]  # create the text
     data.dropna(inplace=True)  # drop the rows with no plot
     data.to_csv("../data/processed.csv", sep=",", index=False)
 

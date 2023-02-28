@@ -44,16 +44,9 @@ if __name__ == "__main__":
         data_collator=lambda data: {
             "input_ids": torch.stack([f[0] for f in data]),
             "attention_mask": torch.stack([f[1] for f in data]),
-            "labels": torch.stack([f[0] for f in data]),
+            "labels": torch.stack([f[2] for f in data]),
         },
     )
-
-    """ run = wandb.init(
-        project=wandb_params.WANDB_PROJECT,
-        entity=wandb_params.WANDB_ENTITY,
-        job_type=wandb_params.WANDB_JOB_TYPE,
-        notes=wandb_params.WANDB_NOTES,
-    ) """
 
     trainer.train()
     trainer.save_model()
