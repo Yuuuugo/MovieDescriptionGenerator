@@ -1,52 +1,73 @@
-from transformers import (
-    TrainingArguments,
-    AutoModelForCausalLM,
-    IntervalStrategy,
-    Trainer,
-    AutoTokenizer,
-    DataCollatorForLanguageModeling,
-)
-from process.process_dataset import split_dataset, PlotGeneratorDataset
-import torch
-import pandas as pd
-import wandb
-import wandb_params
+from datasets import load_dataset
+from transformers import AutoTokenizer
+from transformers import AutoTokenizer, GPT2LMHeadModel, AutoConfig
+from transformers import DataCollatorForLanguageModeling
+from transformers import Trainer, TrainingArguments
+
+
+def tokenize(element):
+    outputs = tokenizer(
+        element["text"],
+        truncation=True,
+        max_length=context_length,
+        return_overflowing_tokens=True,
+        return_length=True,
+    )
+    input_batch = []
+    for length, input_ids in zip(outputs["length"], outputs["input_ids"]):
+        if length == context_length:
+            input_batch.append(input_ids)
+    return {"input_ids": input_batch}
+
 
 if __name__ == "__main__":
+    dataset = load_dataset("csv", data_files="data/processed.csv", split="train")
+    dataset = dataset.train_test_split(test_size=0.2)
+    context_length = 128
+    tokenizer = AutoTokenizer.from_pretrained("gpt2-medium", pad_token="[PAD]")
 
-    training_args = TrainingArguments(
-        output_dir="../results",
-        num_train_epochs=5,
-        logging_steps=100,
-        save_steps=5000,
+    tokenized_datasets = dataset.map(
+        tokenize, batched=True, remove_columns=dataset["train"].column_names
+    )
+
+    config = AutoConfig.from_pretrained(
+        "gpt2",
+        vocab_size=len(tokenizer),
+        n_ctx=context_length,
+        bos_token_id=tokenizer.bos_token_id,
+        eos_token_id=tokenizer.eos_token_id,
+    )
+
+    model = GPT2LMHeadModel(config)
+
+    tokenizer.pad_token = tokenizer.eos_token
+    data_collator = DataCollatorForLanguageModeling(tokenizer, mlm=False)
+
+    args = TrainingArguments(
+        output_dir="../results/",
         per_device_train_batch_size=1,
         per_device_eval_batch_size=1,
-        warmup_steps=10,
-        weight_decay=0.05,
-        logging_dir="./logs",
-        report_to="none",
+        evaluation_strategy="steps",
+        eval_steps=5_000,
+        logging_steps=5_000,
+        gradient_accumulation_steps=8,
+        num_train_epochs=1,
+        weight_decay=0.1,
+        warmup_steps=1_000,
+        lr_scheduler_type="cosine",
+        learning_rate=5e-4,
+        save_steps=5_000,
+        report_to=None,  # disable wandb
     )
-    tokenizer = AutoTokenizer.from_pretrained("gpt2-medium", pad_token="[PAD]")
-    model = AutoModelForCausalLM.from_pretrained("gpt2-medium")
-    dataset = PlotGeneratorDataset(
-        df=pd.read_csv("data/processed.csv"), tokenizer=tokenizer
-    )
-    model.resize_token_embeddings(
-        len(dataset.tokenizer)
-    )  # resize the model embeddings to the new vocabulary size
-    train_ds, val_ds = split_dataset(dataset)
-    # data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False) cannot be used the data is not in the right format for it find why
+
     trainer = Trainer(
         model=model,
-        args=training_args,
-        train_dataset=train_ds,
-        eval_dataset=val_ds,
-        data_collator=lambda data: {
-            "input_ids": torch.stack([f[0] for f in data]),
-            "attention_mask": torch.stack([f[1] for f in data]),
-            "labels": torch.stack([f[2] for f in data]),
-        },
+        tokenizer=tokenizer,
+        args=args,
+        data_collator=data_collator,
+        train_dataset=tokenized_datasets["train"],
+        eval_dataset=tokenized_datasets["test"],
     )
 
     trainer.train()
-    trainer.save_model()
+    trainer.save_model("model/saved_model")
