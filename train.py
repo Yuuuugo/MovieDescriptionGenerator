@@ -23,7 +23,7 @@ def tokenize(element):
 if __name__ == "__main__":
     dataset = load_dataset("csv", data_files="data/processed.csv", split="train")
     dataset = dataset.train_test_split(test_size=0.2)
-    context_length = 128
+    context_length = 512
     tokenizer = AutoTokenizer.from_pretrained("gpt2-medium", pad_token="[PAD]")
 
     tokenized_datasets = dataset.map(
@@ -44,20 +44,20 @@ if __name__ == "__main__":
     data_collator = DataCollatorForLanguageModeling(tokenizer, mlm=False)
 
     args = TrainingArguments(
-        output_dir="../results/",
+        output_dir="results/",
         per_device_train_batch_size=1,
         per_device_eval_batch_size=1,
-        evaluation_strategy="steps",
-        eval_steps=5_000,
-        logging_steps=5_000,
+        evaluation_strategy="epoch",
+        logging_strategy="steps",
+        logging_steps=50,
         gradient_accumulation_steps=8,
-        num_train_epochs=1,
+        num_train_epochs=5,
         weight_decay=0.1,
         warmup_steps=1_000,
         lr_scheduler_type="cosine",
         learning_rate=5e-4,
         save_steps=5_000,
-        report_to=None,  # disable wandb
+        report_to="none",  # disable wandb
     )
 
     trainer = Trainer(
