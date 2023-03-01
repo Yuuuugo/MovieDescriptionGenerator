@@ -1,16 +1,13 @@
 from transformers import (
     TrainingArguments,
-    AutoModelForCausalLM,
-    IntervalStrategy,
+    AutoModelForSeq2SeqLM,
     Trainer,
-    AutoTokenizer,
-    DataCollatorForLanguageModeling,
+    DataCollatorForSeq2Seq,
 )
 from process.process_dataset import split_dataset, PlotGeneratorDataset
 import torch
 import pandas as pd
-import wandb
-import wandb_params
+
 
 if __name__ == "__main__":
 
@@ -26,34 +23,20 @@ if __name__ == "__main__":
         logging_dir="./logs",
         report_to="none",
     )
-    tokenizer = AutoTokenizer.from_pretrained("gpt2-medium", pad_token="[PAD]")
-    model = AutoModelForCausalLM.from_pretrained("gpt2-medium")
-    dataset = PlotGeneratorDataset(
-        df=pd.read_csv("data/processed.csv"), tokenizer=tokenizer
-    )
+    model = AutoModelForSeq2SeqLM.from_pretrained("t5-base")
+    dataset = PlotGeneratorDataset()
     model.resize_token_embeddings(
         len(dataset.tokenizer)
-    )  # resize the model embeddings to the new vocabulary size
+    )  # resize the model embeddings to the new vocabulary size, adding the special tokens defined.
     train_ds, val_ds = split_dataset(dataset)
-    # data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False) cannot be used the data is not in the right format for it find why
+    data_collator = DataCollatorForSeq2Seq(tokenizer=dataset.tokenizer, model=model)
     trainer = Trainer(
         model=model,
         args=training_args,
         train_dataset=train_ds,
         eval_dataset=val_ds,
-        data_collator=lambda data: {
-            "input_ids": torch.stack([f[0] for f in data]),
-            "attention_mask": torch.stack([f[1] for f in data]),
-            "labels": torch.stack([f[0] for f in data]),
-        },
+        data_collator=data_collator,
     )
-
-    """ run = wandb.init(
-        project=wandb_params.WANDB_PROJECT,
-        entity=wandb_params.WANDB_ENTITY,
-        job_type=wandb_params.WANDB_JOB_TYPE,
-        notes=wandb_params.WANDB_NOTES,
-    ) """
 
     trainer.train()
     trainer.save_model()

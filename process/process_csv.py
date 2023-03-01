@@ -12,9 +12,7 @@ def get_plot(movie, year="1995"):
     page_py = wiki_wiki.page(movie)
     if page_py.exists():
         try:
-            return str(
-                page_py.section_by_title("Plot").text
-            )  # assure the output is a string
+            return page_py.section_by_title("Plot").text
         except:
             return pd.NaT
     else:
@@ -42,7 +40,6 @@ def process_data(file):
     data["title"] = data["prompt"].map(lambda x: x.split("(")[0])  # delete the name
     data["description"] = data["title"].map(lambda x: get_plot(x))  # get the plot
     data.drop("prompt", axis=1, inplace=True)
-    data["text"] = data["title"] + ":" + data["description"]  # create the text
     data.dropna(inplace=True)  # drop the rows with no plot
     data.to_csv("../data/processed.csv", sep=",", index=False)
 
