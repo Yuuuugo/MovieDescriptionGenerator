@@ -16,12 +16,14 @@ if __name__ == "__main__":
         num_train_epochs=5,
         logging_steps=100,
         save_steps=5000,
-        per_device_train_batch_size=1,
+        per_device_train_batch_size=8,
         per_device_eval_batch_size=1,
         warmup_steps=10,
         weight_decay=0.05,
         logging_dir="./logs",
         report_to="none",
+        fp16=True,
+        save_total_limit=1,
     )
     model = AutoModelForSeq2SeqLM.from_pretrained("t5-base")
     dataset = PlotGeneratorDataset()
@@ -39,4 +41,4 @@ if __name__ == "__main__":
     )
 
     trainer.train()
-    trainer.save_model()
+    trainer.save_model("model/saved_model")
