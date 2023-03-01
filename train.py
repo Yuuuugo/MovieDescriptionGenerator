@@ -12,7 +12,7 @@ import pandas as pd
 if __name__ == "__main__":
 
     training_args = TrainingArguments(
-        output_dir="../results",
+        output_dir="./results",
         num_train_epochs=5,
         logging_steps=100,
         save_steps=5000,

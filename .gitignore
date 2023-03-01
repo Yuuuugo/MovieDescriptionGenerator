@@ -132,3 +132,5 @@ data/
 
 *.csv
 model/saved_model
+
+env.sh
