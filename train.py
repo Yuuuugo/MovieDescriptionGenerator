@@ -13,8 +13,8 @@ if __name__ == "__main__":
 
     training_args = TrainingArguments(
         output_dir="./results",
-        num_train_epochs=5,
-        logging_steps=100,
+        num_train_epochs=20,
+        logging_steps=10,
         save_steps=5000,
         per_device_train_batch_size=1,
         per_device_eval_batch_size=1,
