@@ -134,3 +134,4 @@ data/
 model/saved_model
 
 env.sh
+*.gz
