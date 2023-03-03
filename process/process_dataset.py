@@ -35,7 +35,7 @@ class PlotGeneratorDataset(Dataset):
                 title_token = tokenizer(
                     title,
                     truncation=True,
-                    max_length=1024,
+                    max_length=4,
                     padding="max_length",
                 )
                 description_token = tokenizer(
@@ -70,9 +70,10 @@ if __name__ == "__main__":
     dataset = PlotGeneratorDataset(path="../data/processed.csv")
     train_ds, val_ds = train_test_split(dataset, test_size=0.2)
 
+    first_sample = train_ds[0]
+    print(dataset.tokenizer.decode(first_sample["input_ids"]))
+    print(dataset.tokenizer.decode(first_sample["labels"]))
+
     model = AutoModelForSeq2SeqLM.from_pretrained("t5-base")
     data_collator = DataCollatorForSeq2Seq(tokenizer=dataset.tokenizer, model=model)
-
-    samples = [dataset[i] for i in range(8)]
-    collator_results = data_collator(samples)
-    print(collator_results.input_ids.shape)
+    sample = data_collator([train_ds[i] for i in range(2)])
