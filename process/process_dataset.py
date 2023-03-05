@@ -34,7 +34,7 @@ class PlotGeneratorDataset(Dataset):
                 txt,
                 truncation=True,
                 padding="max_length",
-                max_length=256,
+                max_length=128,
                 return_attention_mask=True,
                 return_tensors="pt",
             )

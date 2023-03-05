@@ -22,3 +22,6 @@ DONE :
 
 ERROR TO FIX :
     - Token indices sequence length is longer than the specified maximum sequence length for this model (1045 > 1024). Running this sequence through the model will result in indexing errors
+
+
+give description by summarizing the plot and then feed it to the llm model !
