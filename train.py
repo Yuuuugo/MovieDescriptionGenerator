@@ -3,6 +3,7 @@ from transformers import AutoTokenizer
 from transformers import AutoTokenizer, GPT2LMHeadModel, AutoConfig
 from transformers import DataCollatorForLanguageModeling
 from transformers import Trainer, TrainingArguments
+from transformers import AutoModelForCausalLM
 
 
 def tokenize(element):
@@ -25,22 +26,15 @@ if __name__ == "__main__":
     dataset = load_dataset("csv", data_files="data/processed.csv", split="train")
     dataset = dataset.train_test_split(test_size=0.2)
     context_length = 512
-    tokenizer = AutoTokenizer.from_pretrained("gpt2-medium", pad_token="[PAD]")
+    tokenizer = AutoTokenizer.from_pretrained(
+        "EleutherAI/gpt-neo-2.7B", pad_token="[PAD]"
+    )
 
     tokenized_datasets = dataset.map(
         tokenize, batched=True, remove_columns=dataset["train"].column_names
     )
-    print(len(tokenized_datasets["train"]))
 
-    config = AutoConfig.from_pretrained(
-        "gpt2",
-        vocab_size=len(tokenizer),
-        n_ctx=context_length,
-        bos_token_id=tokenizer.bos_token_id,
-        eos_token_id=tokenizer.eos_token_id,
-    )
-
-    model = GPT2LMHeadModel(config)
+    model = AutoModelForCausalLM.from_pretrained("EleutherAI/gpt-neo-2.7B")
 
     tokenizer.pad_token = tokenizer.eos_token
     data_collator = DataCollatorForLanguageModeling(tokenizer, mlm=False)

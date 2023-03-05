@@ -18,7 +18,7 @@ class PlotGeneratorDataset(Dataset):
     def __init__(
         self,
         df=pd.read_csv("./data/processed.csv", sep=","),
-        tokenizer=AutoTokenizer.from_pretrained("gpt2-medium"),
+        tokenizer=AutoTokenizer.from_pretrained("EleutherAI/gpt-neo-2.7B"),
     ):
         self.tokenizer = tokenizer
         # self.max_length = max([len(tokenizer.encode(txt)) for txt in df["text"]])
