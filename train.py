@@ -38,9 +38,11 @@ if __name__ == "__main__":
         model=model,
         tokenizer=tokenizer,
         args=training_args,
-        data_collator=data_collator,
-        train_dataset=train_ds,
-        eval_dataset=val_ds,
+        data_collator=lambda data: {
+            "input_ids": torch.stack([f[0] for f in data]),
+            "attention_mask": torch.stack([f[1] for f in data]),
+            "labels": torch.stack([f[0] for f in data]),
+        },
     )
 
     trainer.train()

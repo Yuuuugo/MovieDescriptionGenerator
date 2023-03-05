@@ -30,12 +30,11 @@ class PlotGeneratorDataset(Dataset):
         self.attention_mask = []
         self.labels = []
         for txt in self.df["text"]:
-            encoded = self.tokenizer(
-                txt,
+            encoded = tokenizer(
+                "<|startoftext|>" + txt + "<|endoftext|>",
                 truncation=True,
+                max_length=self.max_length,
                 padding="max_length",
-                max_length=128,
-                return_attention_mask=True,
                 return_tensors="pt",
             )
             self.input_ids.append(encoded["input_ids"])
@@ -45,10 +44,7 @@ class PlotGeneratorDataset(Dataset):
         return len(self.input_ids)
 
     def __getitem__(self, index):
-        return {
-            "input_ids": self.input_ids[index],
-            "attention_mask": self.attention_mask[index],
-        }
+        return self.input_ids[index], self.attention_mask[index]
 
 
 def split_dataset(dataset):
