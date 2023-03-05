@@ -35,8 +35,7 @@ if __name__ == "__main__":
     )
 
     model = AutoModelForCausalLM.from_pretrained("EleutherAI/gpt-neo-2.7B")
-
-    tokenizer.pad_token = tokenizer.eos_token
+    model.resize_token_embeddings(len(tokenizer))
     data_collator = DataCollatorForLanguageModeling(tokenizer, mlm=False)
 
     args = TrainingArguments(
