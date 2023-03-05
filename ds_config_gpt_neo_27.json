@@ -1,4 +1,5 @@
 {
+    "train_micro_batch_size_per_gpu":15,
     "fp16": {
       "enabled": true,
       "min_loss_scale": 1,
