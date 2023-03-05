@@ -12,7 +12,7 @@ if __name__ == "__main__":
     train_ds, val_ds = split_dataset(dataset)
     tokenizer = dataset.tokenizer
 
-    model = AutoModelForCausalLM.from_pretrained("EleutherAI/gpt-neo-2.7B")
+    model = AutoModelForCausalLM.from_pretrained("EleutherAI/gpt-neo-1.3B")
     model.resize_token_embeddings(len(tokenizer))
     data_collator = DataCollatorForLanguageModeling(tokenizer, mlm=False)
 
