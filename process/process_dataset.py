@@ -20,7 +20,9 @@ class PlotGeneratorDataset(Dataset):
         path="./data/processed.csv",
         tokenizer=AutoTokenizer.from_pretrained(
             "EleutherAI/gpt-neo-1.3B",
-            pad_token="[PAD]",
+            bos_token="<|startoftext|>",
+            eos_token="<|endoftext|>",
+            pad_token="<|pad|>",
         ),
     ):
         self.tokenizer = tokenizer

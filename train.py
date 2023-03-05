@@ -17,7 +17,6 @@ if __name__ == "__main__":
 
     model = AutoModelForCausalLM.from_pretrained("EleutherAI/gpt-neo-1.3B").cuda()
     model.resize_token_embeddings(len(tokenizer))
-    data_collator = DataCollatorForLanguageModeling(tokenizer, mlm=False)
     use_cache = False
 
     training_args = TrainingArguments(
@@ -38,6 +37,8 @@ if __name__ == "__main__":
         model=model,
         tokenizer=tokenizer,
         args=training_args,
+        train_dataset=train_ds,
+        eval_dataset=val_ds,
         data_collator=lambda data: {
             "input_ids": torch.stack([f[0] for f in data]),
             "attention_mask": torch.stack([f[1] for f in data]),
