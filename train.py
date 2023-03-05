@@ -40,7 +40,7 @@ if __name__ == "__main__":
 
     args = TrainingArguments(
         output_dir="results/",
-        per_device_train_batch_size=3,
+        per_device_train_batch_size=1,
         per_device_eval_batch_size=1,
         evaluation_strategy="epoch",
         logging_strategy="steps",
