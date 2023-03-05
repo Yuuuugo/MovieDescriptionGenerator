@@ -17,7 +17,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 class PlotGeneratorDataset(Dataset):
     def __init__(
         self,
-        df=pd.read_csv("./data/processed.csv", sep=","),
+        path="./data/processed.csv",
         tokenizer=AutoTokenizer.from_pretrained(
             "EleutherAI/gpt-neo-2.7B",
             pad_token="[PAD]",
@@ -25,11 +25,11 @@ class PlotGeneratorDataset(Dataset):
     ):
         self.tokenizer = tokenizer
         # self.max_length = max([len(tokenizer.encode(txt)) for txt in df["text"]])
-        self.df = df
+        self.df = pd.read_csv(path, sep=",")
         self.input_ids = []
         self.attention_mask = []
         self.labels = []
-        for txt in df["text"]:
+        for txt in self.df["text"]:
             encoded = self.tokenizer(
                 txt,
                 truncation=True,
@@ -43,10 +43,10 @@ class PlotGeneratorDataset(Dataset):
             self.labels.append(encoded["input_ids"])
 
     def __len__(self):
-        return len(self.input_ids), len(self.attention_mask), len(self.labels)
+        return len(self.input_ids)
 
     def __getitem__(self, index):
-        return self.input_ids[index]
+        return self.input_ids[index], self.attention_mask[index], self.labels[index]
 
 
 def split_dataset(dataset):
@@ -57,7 +57,7 @@ def split_dataset(dataset):
 
 
 if __name__ == "__main__":
-    dataset = PlotGeneratorDataset()
+    dataset = PlotGeneratorDataset(path="../data/processed.csv")
     train_ds, val_ds = train_test_split(dataset, test_size=0.2)
     print(len(train_ds))
     print(len(val_ds))
