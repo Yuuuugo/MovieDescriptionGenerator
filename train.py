@@ -30,7 +30,7 @@ if __name__ == "__main__":
         weight_decay=0.01,
         logging_dir="./logs",
         fp16=True,
-        deepspeed="./ds_config_gpt_neo_27.json",
+        deepspeed="ds_config_gpt_neo_27.json",
         report_to="none",
     )
 
