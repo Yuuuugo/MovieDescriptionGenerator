@@ -39,12 +39,14 @@ class PlotGeneratorDataset(Dataset):
                 return_tensors="pt",
             )
             self.input_ids.append(encoded["input_ids"])
+            self.attention_mask.append(encoded["attention_mask"])
+            self.labels.append(encoded["input_ids"])
 
     def __len__(self):
-        return len(self.input_ids)
+        return len(self.input_ids), len(self.attention_mask), len(self.labels)
 
     def __getitem__(self, index):
-        return self.input_ids[index], self.attention_mask[index], self.labels[index]
+        return self.input_ids[index]
 
 
 def split_dataset(dataset):
