@@ -2,6 +2,9 @@ from process.process_dataset import PlotGeneratorDataset, split_dataset
 from transformers import DataCollatorForLanguageModeling
 from transformers import Trainer, TrainingArguments
 from transformers import AutoModelForCausalLM
+import torch
+
+torch.cuda.empty_cache()
 
 
 if __name__ == "__main__":
@@ -23,9 +26,7 @@ if __name__ == "__main__":
         gradient_accumulation_steps=4,
         num_train_epochs=30,
         weight_decay=0.1,
-        lr_scheduler_type="cosine",
         learning_rate=5e-4,
-        save_steps=5_000,
         report_to="none",  # disable wandb
         fp16=True,
     )
