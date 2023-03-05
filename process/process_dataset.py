@@ -18,7 +18,10 @@ class PlotGeneratorDataset(Dataset):
     def __init__(
         self,
         df=pd.read_csv("./data/processed.csv", sep=","),
-        tokenizer=AutoTokenizer.from_pretrained("EleutherAI/gpt-neo-2.7B"),
+        tokenizer=AutoTokenizer.from_pretrained(
+            "EleutherAI/gpt-neo-2.7B",
+            pad_token="[PAD]",
+        ),
     ):
         self.tokenizer = tokenizer
         # self.max_length = max([len(tokenizer.encode(txt)) for txt in df["text"]])
@@ -26,23 +29,16 @@ class PlotGeneratorDataset(Dataset):
         self.input_ids = []
         self.attention_mask = []
         self.labels = []
-        for title in df["title"]:
-            encodings_dict = tokenizer(
-                title,
+        for txt in df["text"]:
+            encoded = self.tokenizer(
+                txt,
                 truncation=True,
-                max_length=1024,
                 padding="max_length",
+                max_length=512,
+                return_attention_mask=True,
+                return_tensors="pt",
             )
-            self.input_ids.append(torch.tensor(encodings_dict["input_ids"]))
-            self.attention_mask.append(torch.tensor(encodings_dict["attention_mask"]))
-        for description in df["description"]:
-            encodings_dict = tokenizer(
-                str(description),
-                truncation=True,
-                max_length=1024,
-                padding="max_length",
-            )
-            self.labels.append(torch.tensor(encodings_dict["input_ids"]))
+            self.input_ids.append(encoded["input_ids"])
 
     def __len__(self):
         return len(self.df)
