@@ -29,6 +29,7 @@ class PlotGeneratorDataset(Dataset):
         self.input_ids = []
         self.attention_mask = []
         self.labels = []
+        self.max_length = 128
         for txt in self.df["text"]:
             encoded = tokenizer(
                 "<|startoftext|>" + txt + "<|endoftext|>",
