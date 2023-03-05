@@ -31,6 +31,7 @@ if __name__ == "__main__":
         logging_dir="./logs",
         fp16=True,
         deepspeed="./gpt_neo_ds_config.json",
+        report_to="none",
     )
 
     trainer = Trainer(
