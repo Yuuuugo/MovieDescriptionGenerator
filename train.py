@@ -23,7 +23,7 @@ if __name__ == "__main__":
         evaluation_strategy="epoch",
         logging_strategy="epoch",
         gradient_checkpointing=True,
-        gradient_accumulation_steps=4,
+        #gradient_accumulation_steps=4,
         num_train_epochs=30,
         weight_decay=0.1,
         learning_rate=5e-4,
