@@ -41,7 +41,7 @@ class PlotGeneratorDataset(Dataset):
             self.input_ids.append(encoded["input_ids"])
 
     def __len__(self):
-        return len(self.df)
+        return len(self.input_ids)
 
     def __getitem__(self, index):
         return self.input_ids[index], self.attention_mask[index], self.labels[index]
