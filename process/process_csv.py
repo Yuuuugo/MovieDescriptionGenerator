@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 
 """
-From the movies.csv create a processed.csv file with the following columns: year, title, plot
+From the movies
 """
 
 
@@ -20,21 +20,19 @@ def summarize(text):
 
 def get_plot(movie, year="1995"):
     wiki_wiki = wikipediaapi.Wikipedia("en")
+    wiki_name = [
+        movie,
+        movie + "(" + year + " film)",
+        movie + " (film)",
+    ]
     page_py = wiki_wiki.page(movie)
-    if page_py.exists():
-        try:
-            return summarize(str(page_py.section_by_title("Plot")))
-        except:
-            return pd.NaT
-    else:
-        page_py = wiki_wiki.page(movie + "(" + year + " film)")
+    for name in wiki_name:
+        page_py = wiki_wiki.page(name)
         if page_py.exists():
             try:
                 return summarize(str(page_py.section_by_title("Plot")))
             except:
                 return pd.NaT
-        else:
-            return pd.NaT
 
 
 def process_data(file):
