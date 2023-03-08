@@ -11,13 +11,6 @@ torch.cuda.empty_cache()
 
 
 if __name__ == "__main__":
-    dataset = PlotGeneratorDataset()
-    train_ds, val_ds = split_dataset(dataset)
-    tokenizer = dataset.tokenizer
-
-    model = AutoModelForCausalLM.from_pretrained("EleutherAI/gpt-neo-1.3B").cuda()
-    model.resize_token_embeddings(len(tokenizer))
-    use_cache = False
 
     training_args = TrainingArguments(
         output_dir="./results",
@@ -33,6 +26,13 @@ if __name__ == "__main__":
         deepspeed="ds_config_gpt_neo_27.json",
         report_to="none",
     )
+    dataset = PlotGeneratorDataset()
+    train_ds, val_ds = split_dataset(dataset)
+    tokenizer = dataset.tokenizer
+
+    model = AutoModelForCausalLM.from_pretrained("EleutherAI/gpt-neo-1.3B").cuda()
+    model.resize_token_embeddings(len(tokenizer))
+    use_cache = False
 
     trainer = Trainer(
         model=model,

@@ -1,11 +1,9 @@
 
 
 TODO : 
-
-- Train the model,
-    See : 
-        - Wandb example :https://colab.research.google.com/github/wandb/examples/blob/master/colabs/openai/Generate_Doctor_Who_Synopses_with_GPT_3_and_Weights_%26_Biases(video).ipynb
-        - Or try to do my own train() function
+- Retrain the model using the summarize description ?
+- Try to train a gpt-neo 2.7B using deepspeed  : take a look at this https://huggingface.co/docs/transformers/v4.26.1/en/main_classes/deepspeed
+- Generate like 50 poster using the title and use clip to check which image correspond the most to description given ?
 - Deploy using gradio and AWS
 
 DONE :
@@ -16,12 +14,14 @@ DONE :
         2. Webscrapping a website (allocine or wikipedia)
 
     Using this format the dataset will already be on the good format for GPT finetuning which is <prompt> <completion>
-
-
+- Give description by summarizing the plot and then feed it to LLM model !
+- Train the model 
 
 
 ERROR TO FIX :
-    - Token indices sequence length is longer than the specified maximum sequence length for this model (1045 > 1024). Running this sequence through the model will result in indexing errors
+    
 
 
-give description by summarizing the plot and then feed it to the llm model !
+
+
+
