@@ -10,8 +10,8 @@ From the movies
 
 
 def summarize(text):
-    model = "t5-small"
-    # model = "philschmid/bart-large-cnn-samsum"
+    # model = "t5-small"
+    model = "philschmid/bart-large-cnn-samsum"
     summarizer = pipeline("summarization", model=model)
     summary_text = summarizer(text, max_length=300, min_length=250, do_sample=False)[0][
         "summary_text"
