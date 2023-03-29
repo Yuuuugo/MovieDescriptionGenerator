@@ -127,11 +127,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-data/
 
 
-*.csv
-model/saved_model
-
-env.sh
-*.gz
+wandb_params.py

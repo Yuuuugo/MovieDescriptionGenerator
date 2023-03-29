@@ -1,0 +1,137 @@
+
+
+TODO : 
+- Retrain the model using the summarize description ?
+- Try to train a gpt-neo 2.7B using deepspeed  : take a look at this https://huggingface.co/docs/transformers/v4.26.1/en/main_classes/deepspeed
+- Generate like 50 poster using the title and use clip to check which image correspond the most to description given ?
+- Deploy using gradio and AWS
+
+DONE :
+- Generate the dataset :
+    it form would be a csv with two columns <movie name> & <synopsis>
+    How to generate the data ? 
+        1. Find it online on kaggle or hugginface
+        2. Webscrapping a website (allocine or wikipedia)
+
+    Using this format the dataset will already be on the good format for GPT finetuning which is <prompt> <completion>
+- Give description by summarizing the plot and then feed it to LLM model !
+- Train the model 
+
+
+ERROR TO FIX :
+    deepspeed related error : 
+
+[2023-03-08 17:41:30,491] [WARNING] [runner.py:186:fetch_hostfile] Unable to find hostfile, will proceed with training with local resources only.
+Detected CUDA_VISIBLE_DEVICES=0,1: setting --include=localhost:0,1
+[2023-03-08 17:41:30,506] [INFO] [runner.py:550:main] cmd = /gpfs/users/gabrielihu/.conda/envs/movieproject/bin/python3.9 -u -m deepspeed.launcher.launch --world_info=eyJsb2NhbGhvc3QiOiBbMCwgMV19 --master_addr=127.0.0.1 --master_port=29500 --enable_each_rank_log=None train.py --deepspeed ds_config_gpt_neo_27.json
+[2023-03-08 17:41:55,683] [INFO] [launch.py:142:main] WORLD INFO DICT: {'localhost': [0, 1]}
+[2023-03-08 17:41:55,684] [INFO] [launch.py:148:main] nnodes=1, num_local_procs=2, node_rank=0
+[2023-03-08 17:41:55,684] [INFO] [launch.py:161:main] global_rank_mapping=defaultdict(<class 'list'>, {'localhost': [0, 1]})
+[2023-03-08 17:41:55,684] [INFO] [launch.py:162:main] dist_world_size=2
+[2023-03-08 17:41:55,685] [INFO] [launch.py:164:main] Setting CUDA_VISIBLE_DEVICES=0,1
+Special tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.
+Special tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.
+Special tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.
+Special tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.
+[2023-03-08 17:45:32,840] [INFO] [comm.py:661:init_distributed] Initializing TorchBackend in DeepSpeed with backend nccl
+Using cuda_amp half precision backend
+[2023-03-08 17:47:08,089] [INFO] [logging.py:77:log_dist] [Rank 0] DeepSpeed info: version=0.8.2, git-hash=unknown, git-branch=unknown
+[2023-03-08 17:47:09,882] [INFO] [logging.py:77:log_dist] [Rank 0] DeepSpeed Flops Profiler Enabled: False
+Installed CUDA version 11.4 does not match the version torch was compiled with 11.7 but since the APIs are compatible, accepting this combination
+Installed CUDA version 11.4 does not match the version torch was compiled with 11.7 but since the APIs are compatible, accepting this combination
+Using /gpfs/users/gabrielihu/.cache/torch_extensions/py39_cu117 as PyTorch extensions root...
+Using /gpfs/users/gabrielihu/.cache/torch_extensions/py39_cu117 as PyTorch extensions root...
+Detected CUDA files, patching ldflags
+Emitting ninja build file /gpfs/users/gabrielihu/.cache/torch_extensions/py39_cu117/cpu_adam/build.ninja...
+Building extension module cpu_adam...
+Allowing ninja to set a default number of workers... (overridable by setting the environment variable MAX_JOBS=N)
+[1/2] /gpfs/softs/spack/opt/spack/linux-centos7-cascadelake/intel-19.0.3.199/cuda-11.4.0-s72rpxv4ai5ucxwnnur2cyqogjcs52dj/bin/nvcc  -ccbin /gpfs/softs/spack/opt/spack/linux-centos7-haswell/gcc-4.8.5/gcc-8.4.0-tlgixpeglf2ntuhwzyvd7tpirgc26t6i/bin/gcc -DTORCH_EXTENSION_NAME=cpu_adam -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\"_gcc\" -DPYBIND11_STDLIB=\"_libstdcpp\" -DPYBIND11_BUILD_ABI=\"_cxxabi1011\" -I/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/deepspeed/ops/csrc/includes -I/gpfs/softs/spack/opt/spack/linux-centos7-cascadelake/intel-19.0.3.199/cuda-11.4.0-s72rpxv4ai5ucxwnnur2cyqogjcs52dj/include -isystem /gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/torch/include -isystem /gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/torch/include/torch/csrc/api/include -isystem /gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/torch/include/TH -isystem /gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/torch/include/THC -isystem /gpfs/softs/spack/opt/spack/linux-centos7-cascadelake/intel-19.0.3.199/cuda-11.4.0-s72rpxv4ai5ucxwnnur2cyqogjcs52dj/include -isystem /gpfs/users/gabrielihu/.conda/envs/movieproject/include/python3.9 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_80,code=compute_80 -gencode=arch=compute_80,code=sm_80 --compiler-options '-fPIC' -O3 --use_fast_math -std=c++14 -U__CUDA_NO_HALF_OPERATORS__ -U__CUDA_NO_HALF_CONVERSIONS__ -U__CUDA_NO_HALF2_OPERATORS__ -gencode=arch=compute_80,code=sm_80 -gencode=arch=compute_80,code=compute_80 -c /gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/deepspeed/ops/csrc/common/custom_cuda_kernel.cu -o custom_cuda_kernel.cuda.o 
+[2/2] /gpfs/softs/spack/opt/spack/linux-centos7-haswell/gcc-4.8.5/gcc-8.4.0-tlgixpeglf2ntuhwzyvd7tpirgc26t6i/bin/g++ cpu_adam.o custom_cuda_kernel.cuda.o -shared -lcurand -L/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/torch/lib -lc10 -lc10_cuda -ltorch_cpu -ltorch_cuda_cu -ltorch_cuda_cpp -ltorch -ltorch_python -L/gpfs/softs/spack/opt/spack/linux-centos7-cascadelake/intel-19.0.3.199/cuda-11.4.0-s72rpxv4ai5ucxwnnur2cyqogjcs52dj/lib64 -lcudart -o cpu_adam.so
+Loading extension module cpu_adam...
+Traceback (most recent call last):
+  File "/gpfs/workdir/gabrielihu/MovieDescriptionGenerator/train.py", line 50, in <module>
+    trainer.train()
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/transformers/trainer.py", line 1543, in train
+    return inner_training_loop(
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/transformers/trainer.py", line 1612, in _inner_training_loop
+    deepspeed_engine, optimizer, lr_scheduler = deepspeed_init(
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/transformers/deepspeed.py", line 344, in deepspeed_init
+    deepspeed_engine, optimizer, _, lr_scheduler = deepspeed.initialize(**kwargs)
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/deepspeed/__init__.py", line 125, in initialize
+    engine = DeepSpeedEngine(args=args,
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/deepspeed/runtime/engine.py", line 336, in __init__
+Loading extension module cpu_adam...
+Traceback (most recent call last):
+  File "/gpfs/workdir/gabrielihu/MovieDescriptionGenerator/train.py", line 50, in <module>
+    trainer.train()
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/transformers/trainer.py", line 1543, in train
+    return inner_training_loop(
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/transformers/trainer.py", line 1612, in _inner_training_loop
+    deepspeed_engine, optimizer, lr_scheduler = deepspeed_init(
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/transformers/deepspeed.py", line 344, in deepspeed_init
+    deepspeed_engine, optimizer, _, lr_scheduler = deepspeed.initialize(**kwargs)
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/deepspeed/__init__.py", line 125, in initialize
+    engine = DeepSpeedEngine(args=args,
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/deepspeed/runtime/engine.py", line 336, in __init__
+    self._configure_optimizer(optimizer, model_parameters)
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/deepspeed/runtime/engine.py", line 1269, in _configure_optimizer
+    basic_optimizer = self._configure_basic_optimizer(model_parameters)
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/deepspeed/runtime/engine.py", line 1340, in _configure_basic_optimizer
+    optimizer = DeepSpeedCPUAdam(model_parameters,
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/deepspeed/ops/adam/cpu_adam.py", line 96, in __init__
+    self._configure_optimizer(optimizer, model_parameters)
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/deepspeed/runtime/engine.py", line 1269, in _configure_optimizer
+    basic_optimizer = self._configure_basic_optimizer(model_parameters)
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/deepspeed/runtime/engine.py", line 1340, in _configure_basic_optimizer
+    optimizer = DeepSpeedCPUAdam(model_parameters,
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/deepspeed/ops/adam/cpu_adam.py", line 96, in __init__
+    self.ds_opt_adam = CPUAdamBuilder().load()
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/deepspeed/ops/op_builder/builder.py", line 485, in load
+    self.ds_opt_adam = CPUAdamBuilder().load()
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/deepspeed/ops/op_builder/builder.py", line 485, in load
+    return self.jit_load(verbose)
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/deepspeed/ops/op_builder/builder.py", line 520, in jit_load
+        op_module = load(
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/torch/utils/cpp_extension.py", line 1284, in load
+return self.jit_load(verbose)
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/deepspeed/ops/op_builder/builder.py", line 520, in jit_load
+    op_module = load(
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/torch/utils/cpp_extension.py", line 1284, in load
+    return _jit_compile(
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/torch/utils/cpp_extension.py", line 1534, in _jit_compile
+        return _import_module_from_library(name, build_directory, is_python_module)
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/torch/utils/cpp_extension.py", line 1936, in _import_module_from_library
+    return _jit_compile(
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/torch/utils/cpp_extension.py", line 1534, in _jit_compile
+    module = importlib.util.module_from_spec(spec)
+  File "<frozen importlib._bootstrap>", line 565, in module_from_spec
+  File "<frozen importlib._bootstrap_external>", line 1173, in create_module
+return _import_module_from_library(name, build_directory, is_python_module)
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/torch/utils/cpp_extension.py", line 1936, in _import_module_from_library
+      File "<frozen importlib._bootstrap>", line 228, in _call_with_frames_removed
+ImportError: libcurand.so.10: cannot open shared object file: No such file or directory
+module = importlib.util.module_from_spec(spec)
+  File "<frozen importlib._bootstrap>", line 565, in module_from_spec
+  File "<frozen importlib._bootstrap_external>", line 1173, in create_module
+  File "<frozen importlib._bootstrap>", line 228, in _call_with_frames_removed
+ImportError: libcurand.so.10: cannot open shared object file: No such file or directory
+Exception ignored in: Exception ignored in: <function DeepSpeedCPUAdam.__del__ at 0x2afd59d39280>
+Traceback (most recent call last):
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/deepspeed/ops/adam/cpu_adam.py", line 110, in __del__
+    <function DeepSpeedCPUAdam.__del__ at 0x2b9a71d24280>
+Traceback (most recent call last):
+  File "/gpfs/users/gabrielihu/.conda/envs/movieproject/lib/python3.9/site-packages/deepspeed/ops/adam/cpu_adam.py", line 110, in __del__
+    self.ds_opt_adam.destroy_adam(self.opt_id)
+AttributeError: 'DeepSpeedCPUAdam' object has no attribute 'ds_opt_adam'
+self.ds_opt_adam.destroy_adam(self.opt_id)
+AttributeError: 'DeepSpeedCPUAdam' object has no attribute 'ds_opt_adam'
+[2023-03-08 17:48:49,155] [INFO] [launch.py:318:sigkill_handler] Killing subprocess 9591
+[2023-03-08 17:48:49,155] [INFO] [launch.py:318:sigkill_handler] Killing subprocess 9592
+[2023-03-08 17:48:49,478] [ERROR] [launch.py:324:sigkill_handler] ['/gpfs/users/gabrielihu/.conda/envs/movieproject/bin/python3.9', '-u', 'train.py', '--local_rank=1', '--deepspeed', 'ds_config_gpt_neo_27.json'] exits with return code = 1
+
+    
+
+
+
+
+

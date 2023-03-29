@@ -20,37 +20,33 @@ class PlotGeneratorDataset(Dataset):
     def __init__(
         self,
         path="./data/processed.csv",
-        tokenizer=AutoTokenizer.from_pretrained("t5-base", pad_token="[PAD]"),
+        tokenizer=AutoTokenizer.from_pretrained(
+            "EleutherAI/gpt-neo-2.7B",
+            bos_token="<|startoftext|>",
+            eos_token="<|endoftext|>",
+            pad_token="<|pad|>",
+        ),
     ):
         self.tokenizer = tokenizer
         # self.max_length = max([len(tokenizer.encode(txt)) for txt in df["text"]])
         self.df = pd.read_csv(path, sep=",")
-        self.title_input_ids = []
-        self.title_attention_mask = []
-        self.description_input_ids = []
-        self.description_attention_mask = []
-        for title, description in zip(self.df["title"], self.df["description"]):
-            if type(title) == str and type(description) == str:
-
-                title_token = tokenizer(
-                    title,
-                    truncation=True,
-                    max_length=4,
-                    padding="max_length",
-                )
-                description_token = tokenizer(
-                    description,
-                    truncation=True,
-                    max_length=1024,
-                    padding="max_length",
-                )
-                self.title_input_ids.append(torch.tensor(title_token["input_ids"]))
-                self.description_input_ids.append(
-                    torch.tensor(description_token["input_ids"])
-                )
+        self.input_ids = []
+        self.attention_mask = []
+        self.labels = []
+        self.max_length = 128
+        for txt in self.df["text"]:
+            encoded = tokenizer(
+                "<|startoftext|>" + txt + "<|endoftext|>",
+                truncation=True,
+                max_length=self.max_length,
+                padding="max_length",
+                return_tensors="pt",
+            )
+            self.input_ids.append(encoded["input_ids"])
+            self.attention_mask.append(encoded["attention_mask"])
 
     def __len__(self):
-        return len(self.title_input_ids)
+        return len(self.input_ids)
 
     def __getitem__(self, index):
         return {

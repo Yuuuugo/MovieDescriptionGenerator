@@ -1,39 +1,44 @@
-from transformers import (
-    TrainingArguments,
-    AutoModelForSeq2SeqLM,
-    Trainer,
-    DataCollatorForSeq2Seq,
-)
-from process.process_dataset import split_dataset, PlotGeneratorDataset
+from process.process_dataset import PlotGeneratorDataset, split_dataset
+from transformers import DataCollatorForLanguageModeling
+from transformers import Trainer, TrainingArguments
+from transformers import AutoModelForCausalLM, IntervalStrategy
 import torch
-import pandas as pd
+import torch.nn as nn
+from transformers.trainer_pt_utils import get_parameter_names
+
+
+torch.cuda.empty_cache()
 
 
 if __name__ == "__main__":
 
     training_args = TrainingArguments(
         output_dir="./results",
-        num_train_epochs=30,
-        logging_steps=10,
-        save_steps=5000,
-        per_device_train_batch_size=1,
-        per_device_eval_batch_size=1,
-        warmup_steps=10,
-        weight_decay=0.05,
+        num_train_epochs=4.3,
+        logging_steps=50,
+        save_strategy=IntervalStrategy.NO,
+        per_device_train_batch_size=15,
+        per_device_eval_batch_size=15,
+        warmup_steps=50,
+        weight_decay=0.01,
         logging_dir="./logs",
+        fp16=True,
+        deepspeed="config/ds_config_gpt_neo_27.json",
         report_to="none",
         fp16=True,
         save_total_limit=1,
     )
-    model = AutoModelForSeq2SeqLM.from_pretrained("t5-base")
     dataset = PlotGeneratorDataset()
-    model.resize_token_embeddings(
-        len(dataset.tokenizer)
-    )  # resize the model embeddings to the new vocabulary size, adding the special tokens defined.
     train_ds, val_ds = split_dataset(dataset)
-    data_collator = DataCollatorForSeq2Seq(tokenizer=dataset.tokenizer, model=model)
+    tokenizer = dataset.tokenizer
+
+    model = AutoModelForCausalLM.from_pretrained("EleutherAI/gpt-neo-2.7B").cuda()
+    model.resize_token_embeddings(len(tokenizer))
+    use_cache = False
+
     trainer = Trainer(
         model=model,
+        tokenizer=tokenizer,
         args=training_args,
         train_dataset=train_ds,
         eval_dataset=val_ds,
