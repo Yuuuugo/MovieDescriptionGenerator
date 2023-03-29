@@ -38,7 +38,7 @@ def get_plot(movie, year="1995"):
 
 def process_data(file):
     data = pd.read_csv(file, sep=",", names=["index", "prompt"])
-    data = data[:10000]
+    data = data[:3000]
     data.drop("index", axis=1, inplace=True)  # drop the index column
     data["year"] = data["prompt"].str.extract(
         "(\d{4})", expand=True

@@ -23,14 +23,14 @@ if __name__ == "__main__":
         weight_decay=0.01,
         logging_dir="./logs",
         fp16=True,
-        deepspeed="ds_config_gpt_neo_27.json",
+        deepspeed="config/ds_config_gpt_neo_27.json",
         report_to="none",
     )
     dataset = PlotGeneratorDataset()
     train_ds, val_ds = split_dataset(dataset)
     tokenizer = dataset.tokenizer
 
-    model = AutoModelForCausalLM.from_pretrained("EleutherAI/gpt-neo-1.3B").cuda()
+    model = AutoModelForCausalLM.from_pretrained("EleutherAI/gpt-neo-2.7B").cuda()
     model.resize_token_embeddings(len(tokenizer))
     use_cache = False
 
